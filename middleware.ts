@@ -5,10 +5,11 @@ import type { NextRequest } from "next/server";
 export async function middleware(req: NextRequest) {
   const path = req.nextUrl.pathname;
 
-  // Allow public access to the home page, login, signup, and NextAuth endpoints
+  // Allow public access to the home page, login, register, signup, and NextAuth endpoints
   if (
     path === "/" || 
     path === "/login" || 
+    path === "/register" || 
     path === "/signup" || 
     path.startsWith("/api/auth")
   ) {
