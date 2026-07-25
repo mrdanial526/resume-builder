@@ -47,6 +47,11 @@ interface ResumeFormProps {
 export default function ResumeForm({ initialData }: ResumeFormProps) {
   const router = useRouter();
 
+  // Tailwind styling variables for consistent inputs and sections
+  const inputStyle = "w-full mt-1 p-2.5 bg-slate-50 border border-gray-300 rounded-lg text-xs outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all";
+  const labelStyle = "block text-xs font-bold uppercase tracking-wider text-slate-700";
+  const sectionHeaderStyle = "text-xs font-extrabold uppercase tracking-widest text-blue-600 border-b pb-1.5 mb-3";
+
   const [formData, setFormData] = useState({
     title: initialData?.title ?? "",
     fullName: initialData?.fullName ?? "",
@@ -263,7 +268,7 @@ export default function ResumeForm({ initialData }: ResumeFormProps) {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-[1500px] mx-auto p-6 items-start">
         {/* Editor Form Column */}
-        <div className="bg-white p-6 rounded-xl border shadow-sm space-y-6 no-print">
+        <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm space-y-6 no-print">
           <div className="flex justify-between items-center border-b pb-3 sticky top-0 bg-white z-10 py-2">
             <div className="flex items-center gap-3">
               <Link
@@ -307,12 +312,12 @@ export default function ResumeForm({ initialData }: ResumeFormProps) {
 
           {/* Personal Details */}
           <div className="space-y-4">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-blue-600 border-b pb-1">
+            <h3 className={sectionHeaderStyle}>
               1. Personal Details & Title
             </h3>
 
             <div>
-              <label className="block text-xs font-medium text-gray-600">
+              <label className={labelStyle}>
                 Resume Title (e.g., Software Engineer Resume)
               </label>
               <input
@@ -321,25 +326,25 @@ export default function ResumeForm({ initialData }: ResumeFormProps) {
                 value={formData.title}
                 onChange={handleChange}
                 placeholder="e.g. Full Stack Developer"
-                className="w-full mt-1 p-2 border rounded text-xs outline-none focus:ring-1 focus:ring-blue-500 font-semibold"
+                className={inputStyle}
               />
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-gray-600">
+              <label className={labelStyle}>
                 Profile Photo
               </label>
               <input
                 type="file"
                 accept="image/*"
                 onChange={handleImageUpload}
-                className="w-full mt-1 p-1 text-xs border rounded-md"
+                className="w-full mt-1 p-2 bg-slate-50 border border-gray-300 rounded-lg text-xs"
               />
             </div>
 
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-xs font-medium text-gray-600">
+                <label className={labelStyle}>
                   Full Name
                 </label>
                 <input
@@ -347,11 +352,11 @@ export default function ResumeForm({ initialData }: ResumeFormProps) {
                   name="fullName"
                   value={formData.fullName}
                   onChange={handleChange}
-                  className="w-full mt-1 p-2 border rounded text-xs outline-none focus:ring-1 focus:ring-blue-500"
+                  className={inputStyle}
                 />
               </div>
               <div>
-                <label className="block text-xs font-medium text-gray-600">
+                <label className={labelStyle}>
                   Email
                 </label>
                 <input
@@ -359,13 +364,13 @@ export default function ResumeForm({ initialData }: ResumeFormProps) {
                   name="email"
                   value={formData.email}
                   onChange={handleChange}
-                  className="w-full mt-1 p-2 border rounded text-xs outline-none focus:ring-1 focus:ring-blue-500"
+                  className={inputStyle}
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-gray-600">
+              <label className={labelStyle}>
                 Phone Number
               </label>
               <input
@@ -373,12 +378,12 @@ export default function ResumeForm({ initialData }: ResumeFormProps) {
                 name="phone"
                 value={formData.phone}
                 onChange={handleChange}
-                className="w-full mt-1 p-2 border rounded text-xs outline-none focus:ring-1 focus:ring-blue-500"
+                className={inputStyle}
               />
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-gray-600">
+              <label className={labelStyle}>
                 Professional Summary
               </label>
               <textarea
@@ -386,12 +391,12 @@ export default function ResumeForm({ initialData }: ResumeFormProps) {
                 rows={3}
                 value={formData.summary}
                 onChange={handleChange}
-                className="w-full mt-1 p-2 border rounded text-xs outline-none focus:ring-1 focus:ring-blue-500"
+                className={inputStyle}
               />
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-gray-600">
+              <label className={labelStyle}>
                 Skills (comma separated)
               </label>
               <input
@@ -399,13 +404,13 @@ export default function ResumeForm({ initialData }: ResumeFormProps) {
                 name="skills"
                 value={formData.skills}
                 onChange={handleChange}
-                className="w-full mt-1 p-2 border rounded text-xs outline-none focus:ring-1 focus:ring-blue-500"
+                className={inputStyle}
               />
             </div>
 
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-xs font-medium text-gray-600">
+                <label className={labelStyle}>
                   Certifications (comma separated)
                 </label>
                 <input
@@ -414,11 +419,11 @@ export default function ResumeForm({ initialData }: ResumeFormProps) {
                   value={formData.certifications}
                   onChange={handleChange}
                   placeholder="AWS Certified..."
-                  className="w-full mt-1 p-2 border rounded text-xs outline-none focus:ring-1 focus:ring-blue-500"
+                  className={inputStyle}
                 />
               </div>
               <div>
-                <label className="block text-xs font-medium text-gray-600">
+                <label className={labelStyle}>
                   Languages (comma separated)
                 </label>
                 <input
@@ -427,7 +432,7 @@ export default function ResumeForm({ initialData }: ResumeFormProps) {
                   value={formData.languages}
                   onChange={handleChange}
                   placeholder="English, Urdu..."
-                  className="w-full mt-1 p-2 border rounded text-xs outline-none focus:ring-1 focus:ring-blue-500"
+                  className={inputStyle}
                 />
               </div>
             </div>
@@ -436,7 +441,7 @@ export default function ResumeForm({ initialData }: ResumeFormProps) {
           {/* Experience */}
           <div className="space-y-4 pt-2">
             <div className="flex justify-between items-center border-b pb-1">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-blue-600">
+              <h3 className={sectionHeaderStyle + " mb-0 border-b-0"}>
                 2. Experience
               </h3>
               <button
@@ -451,17 +456,17 @@ export default function ResumeForm({ initialData }: ResumeFormProps) {
             {experience.map((exp, index) => (
               <div
                 key={index}
-                className="p-3 border rounded bg-slate-50 space-y-2 relative"
+                className="p-4 border rounded-xl bg-slate-50 space-y-3 relative"
               >
                 <div className="flex justify-between items-center">
-                  <span className="text-[11px] font-bold text-gray-500">
+                  <span className="text-xs font-bold text-gray-500">
                     Role #{index + 1}
                   </span>
                   {experience.length > 1 && (
                     <button
                       type="button"
                       onClick={() => removeExperience(index)}
-                      className="text-[11px] text-red-500 hover:underline"
+                      className="text-xs text-red-500 hover:underline font-semibold"
                     >
                       Remove
                     </button>
@@ -476,7 +481,7 @@ export default function ResumeForm({ initialData }: ResumeFormProps) {
                     onChange={(e) =>
                       updateExperience(index, "role", e.target.value)
                     }
-                    className="p-1.5 border rounded text-xs"
+                    className={inputStyle}
                   />
                   <input
                     type="text"
@@ -485,7 +490,7 @@ export default function ResumeForm({ initialData }: ResumeFormProps) {
                     onChange={(e) =>
                       updateExperience(index, "company", e.target.value)
                     }
-                    className="p-1.5 border rounded text-xs"
+                    className={inputStyle}
                   />
                 </div>
 
@@ -497,7 +502,7 @@ export default function ResumeForm({ initialData }: ResumeFormProps) {
                     onChange={(e) =>
                       updateExperience(index, "startDate", e.target.value)
                     }
-                    className="p-1.5 border rounded text-xs"
+                    className={inputStyle}
                   />
                   <input
                     type="text"
@@ -506,7 +511,7 @@ export default function ResumeForm({ initialData }: ResumeFormProps) {
                     onChange={(e) =>
                       updateExperience(index, "endDate", e.target.value)
                     }
-                    className="p-1.5 border rounded text-xs"
+                    className={inputStyle}
                   />
                 </div>
 
@@ -517,7 +522,7 @@ export default function ResumeForm({ initialData }: ResumeFormProps) {
                   onChange={(e) =>
                     updateExperience(index, "description", e.target.value)
                   }
-                  className="w-full p-1.5 border rounded text-xs"
+                  className={inputStyle}
                 />
               </div>
             ))}
@@ -526,7 +531,7 @@ export default function ResumeForm({ initialData }: ResumeFormProps) {
           {/* Projects Section */}
           <div className="space-y-4 pt-2">
             <div className="flex justify-between items-center border-b pb-1">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-blue-600">
+              <h3 className={sectionHeaderStyle + " mb-0 border-b-0"}>
                 3. Key Projects
               </h3>
               <button
@@ -541,17 +546,17 @@ export default function ResumeForm({ initialData }: ResumeFormProps) {
             {projects.map((proj, index) => (
               <div
                 key={index}
-                className="p-3 border rounded bg-slate-50 space-y-2 relative"
+                className="p-4 border rounded-xl bg-slate-50 space-y-3 relative"
               >
                 <div className="flex justify-between items-center">
-                  <span className="text-[11px] font-bold text-gray-500">
+                  <span className="text-xs font-bold text-gray-500">
                     Project #{index + 1}
                   </span>
                   {projects.length > 1 && (
                     <button
                       type="button"
                       onClick={() => removeProject(index)}
-                      className="text-[11px] text-red-500 hover:underline"
+                      className="text-xs text-red-500 hover:underline font-semibold"
                     >
                       Remove
                     </button>
@@ -566,7 +571,7 @@ export default function ResumeForm({ initialData }: ResumeFormProps) {
                     onChange={(e) =>
                       updateProject(index, "title", e.target.value)
                     }
-                    className="p-1.5 border rounded text-xs"
+                    className={inputStyle}
                   />
                   <input
                     type="text"
@@ -575,7 +580,7 @@ export default function ResumeForm({ initialData }: ResumeFormProps) {
                     onChange={(e) =>
                       updateProject(index, "technologies", e.target.value)
                     }
-                    className="p-1.5 border rounded text-xs"
+                    className={inputStyle}
                   />
                 </div>
 
@@ -584,7 +589,7 @@ export default function ResumeForm({ initialData }: ResumeFormProps) {
                   placeholder="Project Link"
                   value={proj.link}
                   onChange={(e) => updateProject(index, "link", e.target.value)}
-                  className="w-full p-1.5 border rounded text-xs"
+                  className={inputStyle}
                 />
 
                 <textarea
@@ -594,7 +599,7 @@ export default function ResumeForm({ initialData }: ResumeFormProps) {
                   onChange={(e) =>
                     updateProject(index, "description", e.target.value)
                   }
-                  className="w-full p-1.5 border rounded text-xs"
+                  className={inputStyle}
                 />
               </div>
             ))}
@@ -603,7 +608,7 @@ export default function ResumeForm({ initialData }: ResumeFormProps) {
           {/* Education */}
           <div className="space-y-4 pt-2">
             <div className="flex justify-between items-center border-b pb-1">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-blue-600">
+              <h3 className={sectionHeaderStyle + " mb-0 border-b-0"}>
                 4. Education
               </h3>
               <button
@@ -618,17 +623,17 @@ export default function ResumeForm({ initialData }: ResumeFormProps) {
             {education.map((edu, index) => (
               <div
                 key={index}
-                className="p-3 border rounded bg-slate-50 space-y-2 relative"
+                className="p-4 border rounded-xl bg-slate-50 space-y-3 relative"
               >
                 <div className="flex justify-between items-center">
-                  <span className="text-[11px] font-bold text-gray-500">
+                  <span className="text-xs font-bold text-gray-500">
                     Degree #{index + 1}
                   </span>
                   {education.length > 1 && (
                     <button
                       type="button"
                       onClick={() => removeEducation(index)}
-                      className="text-[11px] text-red-500 hover:underline"
+                      className="text-xs text-red-500 hover:underline font-semibold"
                     >
                       Remove
                     </button>
@@ -643,7 +648,7 @@ export default function ResumeForm({ initialData }: ResumeFormProps) {
                     onChange={(e) =>
                       updateEducation(index, "school", e.target.value)
                     }
-                    className="p-1.5 border rounded text-xs col-span-2"
+                    className={inputStyle + " col-span-2"}
                   />
                   <input
                     type="text"
@@ -652,7 +657,7 @@ export default function ResumeForm({ initialData }: ResumeFormProps) {
                     onChange={(e) =>
                       updateEducation(index, "year", e.target.value)
                     }
-                    className="p-1.5 border rounded text-xs"
+                    className={inputStyle}
                   />
                 </div>
 
@@ -663,7 +668,7 @@ export default function ResumeForm({ initialData }: ResumeFormProps) {
                   onChange={(e) =>
                     updateEducation(index, "degree", e.target.value)
                   }
-                  className="w-full p-1.5 border rounded text-xs"
+                  className={inputStyle}
                 />
               </div>
             ))}
