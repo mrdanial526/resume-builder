@@ -197,16 +197,16 @@ export default function ResumeForm({ initialData }: ResumeFormProps) {
         projects,
       };
 
-      const result = await saveResume(payload);
+      const result: any = await saveResume(payload);
 
       if (!result?.success) {
-        const errorMsg = "error" in result && result.error ? String(result.error) : "Failed to save resume";
+        const errorMsg = result && result.error ? String(result.error) : "Failed to save resume";
         throw new Error(errorMsg);
       }
 
       setSaveStatus("Saved successfully!");
 
-      const savedId = "id" in result ? result.id : undefined;
+      const savedId = result?.id;
       if (savedId && (initialData?._id === "new" || !initialData?._id)) {
         router.push(`/builder/${savedId}`);
       }
