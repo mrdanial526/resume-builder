@@ -78,6 +78,7 @@ export default function LoginPage() {
               <input
                 type="email"
                 required
+                autoComplete="username"
                 placeholder="name@example.com"
                 className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:bg-white transition duration-200"
                 value={email}
@@ -92,6 +93,7 @@ export default function LoginPage() {
               <input
                 type="password"
                 required
+                autoComplete="current-password"
                 placeholder="••••••••"
                 className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:bg-white transition duration-200"
                 value={password}
