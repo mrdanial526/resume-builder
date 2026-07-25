@@ -191,15 +191,22 @@ export default function ResumeForm({ initialData }: ResumeFormProps) {
 
     try {
       const payload = {
-        _id: initialData?._id,
-        ...formData,
+        ...(initialData?._id && initialData._id !== "new" && { _id: initialData._id }),
+        title: formData.title.trim(),
+        fullName: formData.fullName.trim(),
+        email: formData.email.trim(),
+        phone: formData.phone.trim(),
+        summary: formData.summary.trim(),
+        picture: formData.picture,
+        languages: formData.languages.trim(),
+        certifications: formData.certifications.trim(),
         skills: formData.skills
           .split(",")
           .map((s) => s.trim())
           .filter(Boolean),
-        experience,
-        education,
-        projects,
+        experience: experience.filter((e) => e.company.trim() || e.role.trim()),
+        education: education.filter((ed) => ed.school.trim() || ed.degree.trim()),
+        projects: projects.filter((p) => p.title.trim()),
       };
 
       const result: any = await saveResume(payload);
@@ -211,9 +218,11 @@ export default function ResumeForm({ initialData }: ResumeFormProps) {
 
       setSaveStatus("Saved successfully!");
 
-      const savedId = result?.id;
-      if (savedId && (initialData?._id === "new" || !initialData?._id)) {
+      const savedId = result?.id || result?.insertedId || result?._id;
+      if (savedId && (!initialData?._id || initialData._id === "new")) {
         router.push(`/builder/${savedId}`);
+      } else {
+        router.refresh();
       }
     } catch (err: any) {
       setSaveStatus(`Save Error: ${err.message || "Unknown error"}`);

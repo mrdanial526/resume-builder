@@ -12,6 +12,12 @@ export default function LoginPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+
+    if (!email.trim() || !password.trim()) {
+      setError("Email and Password are required.");
+      return;
+    }
+
     setLoading(true);
 
     const res = await signIn("credentials", {

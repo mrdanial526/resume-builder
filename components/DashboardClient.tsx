@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Plus, Search, Trash2, Edit3, FileText, Loader2 } from "lucide-react";
 import { deleteResume } from "@/actions/resume-actions";
@@ -20,9 +20,12 @@ export default function DashboardClient({ resumes = [] }: { resumes?: ResumeItem
   const [isDeleting, setIsDeleting] = useState<string | null>(null);
   const [localResumes, setLocalResumes] = useState<ResumeItem[]>(resumes);
 
-  if (resumes !== localResumes && !isDeleting) {
-    setLocalResumes(resumes);
-  }
+  // Safely sync props when they change from the server
+  useEffect(() => {
+    if (!isDeleting) {
+      setLocalResumes(resumes);
+    }
+  }, [resumes, isDeleting]);
 
   const filteredResumes = localResumes.filter((resume) => {
     const query = searchQuery.toLowerCase().trim();

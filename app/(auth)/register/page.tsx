@@ -13,6 +13,12 @@ export default function RegisterPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+
+    if (!name.trim() || !email.trim() || !password.trim()) {
+      setError("All fields are required.");
+      return;
+    }
+
     setLoading(true);
 
     const res = await registerUser({ name, email, password });
