@@ -94,7 +94,6 @@ export default function ResumeForm({ initialData }: ResumeFormProps) {
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-    // Clear field-specific error as user types
     if (errors[name]) {
       setErrors((prev) => ({ ...prev, [name]: false }));
     }
@@ -186,7 +185,6 @@ export default function ResumeForm({ initialData }: ResumeFormProps) {
   };
 
   const handleSave = async () => {
-    // Inline validation checks
     const newErrors: { [key: string]: boolean } = {};
     if (!formData.fullName.trim()) newErrors.fullName = true;
     if (!formData.email.trim()) newErrors.email = true;

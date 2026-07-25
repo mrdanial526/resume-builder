@@ -17,8 +17,12 @@ interface ResumeItem {
 
 export default function DashboardClient({ resumes = [] }: { resumes?: ResumeItem[] }) {
   const [searchQuery, setSearchQuery] = useState("");
-  const [isDeleting, setIsDeleting] = useState<string | null>(null);
   const [localResumes, setLocalResumes] = useState<ResumeItem[]>(resumes);
+
+  // Custom modal state replacing window.confirm() & window.alert()
+  const [resumeToDelete, setResumeToDelete] = useState<ResumeItem | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState("");
 
   // Safely sync props when they change from the server
   useEffect(() => {
@@ -37,27 +41,33 @@ export default function DashboardClient({ resumes = [] }: { resumes?: ResumeItem
     return titleMatch || nameMatch || emailMatch;
   });
 
-  const handleDelete = async (id: string, title: string) => {
-    const confirmDelete = window.confirm(
-      `Are you sure you want to delete "${title || "this resume"}"?`
-    );
-    if (!confirmDelete) return;
+  const handleDeleteConfirm = async () => {
+    if (!resumeToDelete) return;
 
-    setIsDeleting(id);
-    setLocalResumes((prev) => prev.filter((r) => r._id !== id));
+    setIsDeleting(true);
+    setDeleteError("");
+    const targetId = resumeToDelete._id;
+
+    // Optimistically remove from local view
+    setLocalResumes((prev) => prev.filter((r) => r._id !== targetId));
 
     try {
-      const res = await deleteResume(id);
+      const res = await deleteResume(targetId);
       if (!res?.success) {
+        // Rollback state if deletion failed on server
         setLocalResumes(resumes);
         const errorMsg = "error" in res && res.error ? String(res.error) : "Failed to delete resume";
-        alert(errorMsg);
+        setDeleteError(errorMsg);
+        setIsDeleting(false);
+        return;
       }
+      // Success: close modal and reset
+      setResumeToDelete(null);
     } catch (err) {
       setLocalResumes(resumes);
-      alert("An unexpected error occurred while deleting.");
+      setDeleteError("An unexpected network error occurred while deleting.");
     } finally {
-      setIsDeleting(null);
+      setIsDeleting(false);
     }
   };
 
@@ -157,16 +167,14 @@ export default function DashboardClient({ resumes = [] }: { resumes?: ResumeItem
                   </Link>
 
                   <button
-                    onClick={() => handleDelete(resume._id, resume.title || "")}
-                    disabled={isDeleting === resume._id}
-                    className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition disabled:opacity-50"
+                    onClick={() => {
+                      setDeleteError("");
+                      setResumeToDelete(resume);
+                    }}
+                    className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition"
                     title="Delete Resume"
                   >
-                    {isDeleting === resume._id ? (
-                      <Loader2 className="w-4 h-4 animate-spin text-rose-600" />
-                    ) : (
-                      <Trash2 className="w-4 h-4" />
-                    )}
+                    <Trash2 className="w-4 h-4" />
                   </button>
                 </div>
               </div>
@@ -196,6 +204,58 @@ export default function DashboardClient({ resumes = [] }: { resumes?: ResumeItem
           </div>
         )}
       </main>
+
+      {/* --- CUSTOM DELETE CONFIRMATION MODAL --- */}
+      {resumeToDelete && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4 animate-fadeIn">
+          <div className="w-full max-w-md bg-white rounded-2xl shadow-2xl border border-slate-100 p-6 sm:p-8 space-y-6">
+            <div className="space-y-3 text-center sm:text-left">
+              <div className="w-12 h-12 rounded-2xl bg-rose-50 border border-rose-100 text-rose-600 flex items-center justify-center mx-auto sm:mx-0 text-xl font-bold">
+                ⚠️
+              </div>
+              <h3 className="text-xl font-bold text-slate-900">Delete Resume</h3>
+              <p className="text-sm text-slate-500 leading-relaxed">
+                Are you sure you want to delete <span className="font-semibold text-slate-700">"{resumeToDelete.title || "this resume"}"</span>? This action cannot be undone.
+              </p>
+            </div>
+
+            {deleteError && (
+              <div className="bg-rose-50 border border-rose-200 text-rose-700 p-3 rounded-xl text-xs font-semibold">
+                ⚠️ {deleteError}
+              </div>
+            )}
+
+            <div className="flex flex-col-reverse sm:flex-row gap-3 pt-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setResumeToDelete(null);
+                  setDeleteError("");
+                }}
+                disabled={isDeleting}
+                className="w-full sm:w-1/2 py-3 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-sm rounded-xl transition-all duration-200"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleDeleteConfirm}
+                disabled={isDeleting}
+                className="w-full sm:w-1/2 py-3 px-4 bg-rose-600 hover:bg-rose-700 active:scale-[0.99] text-white font-semibold text-sm rounded-xl shadow-lg shadow-rose-600/25 transition-all duration-200 disabled:opacity-50 flex items-center justify-center gap-2"
+              >
+                {isDeleting ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin text-white" />
+                    Deleting...
+                  </>
+                ) : (
+                  "Yes, Delete"
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
