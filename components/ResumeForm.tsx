@@ -81,6 +81,7 @@ export default function ResumeForm({ initialData }: ResumeFormProps) {
 
   const [saving, setSaving] = useState(false);
   const [saveStatus, setSaveStatus] = useState<string | null>(null);
+  const [errors, setErrors] = useState<{ [key: string]: boolean }>({});
 
   useEffect(() => {
     if (!saveStatus) return;
@@ -93,6 +94,10 @@ export default function ResumeForm({ initialData }: ResumeFormProps) {
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+    // Clear field-specific error as user types
+    if (errors[name]) {
+      setErrors((prev) => ({ ...prev, [name]: false }));
+    }
   };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -181,6 +186,18 @@ export default function ResumeForm({ initialData }: ResumeFormProps) {
   };
 
   const handleSave = async () => {
+    // Inline validation checks
+    const newErrors: { [key: string]: boolean } = {};
+    if (!formData.fullName.trim()) newErrors.fullName = true;
+    if (!formData.email.trim()) newErrors.email = true;
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      setSaveStatus("Save Error: Please fill in all required fields (Name and Email).");
+      return;
+    }
+
+    setErrors({});
     setSaving(true);
     setSaveStatus(null);
 
@@ -340,26 +357,34 @@ export default function ResumeForm({ initialData }: ResumeFormProps) {
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <label className="block text-xs font-medium text-gray-600">
-                  Full Name
+                  Full Name <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
                   name="fullName"
                   value={formData.fullName}
                   onChange={handleChange}
-                  className="w-full mt-1 p-2 border rounded text-xs outline-none focus:ring-1 focus:ring-blue-500"
+                  className={`w-full mt-1 p-2 border rounded text-xs outline-none focus:ring-1 ${
+                    errors.fullName
+                      ? "border-red-500 bg-red-50"
+                      : "focus:ring-blue-500"
+                  }`}
                 />
               </div>
               <div>
                 <label className="block text-xs font-medium text-gray-600">
-                  Email
+                  Email <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="email"
                   name="email"
                   value={formData.email}
                   onChange={handleChange}
-                  className="w-full mt-1 p-2 border rounded text-xs outline-none focus:ring-1 focus:ring-blue-500"
+                  className={`w-full mt-1 p-2 border rounded text-xs outline-none focus:ring-1 ${
+                    errors.email
+                      ? "border-red-500 bg-red-50"
+                      : "focus:ring-blue-500"
+                  }`}
                 />
               </div>
             </div>

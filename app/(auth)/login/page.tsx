@@ -6,31 +6,59 @@ import { signIn } from "next-auth/react";
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  
+  // Track errors individually per field
+  const [fieldErrors, setFieldErrors] = useState<{ [key: string]: string }>({});
+  const [generalError, setGeneralError] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
+    setFieldErrors({});
+    setGeneralError("");
 
-    if (!email.trim() || !password.trim()) {
-      setError("Email and Password are required.");
+    // Validate individual fields and map out specific reasons
+    const errors: { [key: string]: string } = {};
+    if (!email.trim()) {
+      errors.email = "Email address is required to sign in.";
+    }
+    if (!password.trim()) {
+      errors.password = "Password is required to access your account.";
+    }
+
+    // If there are validation errors, block submission and display them
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
+      setGeneralError("Please fill out all required fields before signing in.");
       return;
     }
 
     setLoading(true);
 
-    const res = await signIn("credentials", {
-      email,
-      password,
-      redirect: false,
-    });
+    try {
+      const res = await signIn("credentials", {
+        email,
+        password,
+        redirect: false,
+      });
 
-    if (res?.error) {
-      setError("Invalid email or password");
+      if (res?.error) {
+        // Translate NextAuth's generic error into a clear reason for the user
+        if (res.error === "CredentialsSignin" || res.status === 401) {
+          setGeneralError("Incorrect email or password. Please check your credentials and try again.");
+        } else {
+          setGeneralError(`Sign in failed: ${res.error}`);
+        }
+        setLoading(false);
+      } else if (res?.ok) {
+        window.location.href = "/dashboard";
+      } else {
+        setGeneralError("An unexpected error occurred during sign in. Please try again.");
+        setLoading(false);
+      }
+    } catch (err) {
+      setGeneralError("Network error: Could not connect to the server. Please check your connection.");
       setLoading(false);
-    } else {
-      window.location.href = "/dashboard";
     }
   };
 
@@ -69,41 +97,66 @@ export default function LoginPage() {
             </p>
           </div>
 
-          {error && (
-            <div className="bg-rose-50 border border-rose-200 text-rose-600 p-3.5 rounded-xl text-sm font-medium text-center animate-shake">
-              {error}
+          {generalError && (
+            <div className="bg-rose-50 border border-rose-200 text-rose-700 p-3.5 rounded-xl text-xs font-semibold flex items-center gap-2">
+              <span>⚠️</span>
+              <p>{generalError}</p>
             </div>
           )}
 
           <form className="space-y-5" onSubmit={handleSubmit}>
+            {/* Email Address Field */}
             <div className="space-y-1.5">
               <label className="block text-xs font-semibold uppercase tracking-wider text-slate-600">
-                Email Address
+                Email Address *
               </label>
               <input
                 type="email"
-                required
                 autoComplete="username"
                 placeholder="name@example.com"
-                className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:bg-white transition duration-200"
+                className={`w-full px-4 py-3 bg-slate-50 border rounded-xl text-slate-900 text-sm focus:outline-none focus:bg-white transition duration-200 ${
+                  fieldErrors.email
+                    ? "border-rose-500 ring-2 ring-rose-100"
+                    : "border-slate-200 focus:ring-2 focus:ring-indigo-600"
+                }`}
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  if (fieldErrors.email) setFieldErrors({ ...fieldErrors, email: "" });
+                }}
               />
+              {fieldErrors.email && (
+                <p className="text-xs font-semibold text-rose-600 mt-1">
+                  ⚠️ {fieldErrors.email}
+                </p>
+              )}
             </div>
 
+            {/* Password Field */}
             <div className="space-y-1.5">
               <label className="block text-xs font-semibold uppercase tracking-wider text-slate-600">
-                Password
+                Password *
               </label>
               <input
                 type="password"
-                required
                 autoComplete="current-password"
                 placeholder="••••••••"
-                className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:bg-white transition duration-200"
+                className={`w-full px-4 py-3 bg-slate-50 border rounded-xl text-slate-900 text-sm focus:outline-none focus:bg-white transition duration-200 ${
+                  fieldErrors.password
+                    ? "border-rose-500 ring-2 ring-rose-100"
+                    : "border-slate-200 focus:ring-2 focus:ring-indigo-600"
+                }`}
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  if (fieldErrors.password) setFieldErrors({ ...fieldErrors, password: "" });
+                }}
               />
+              {fieldErrors.password && (
+                <p className="text-xs font-semibold text-rose-600 mt-1">
+                  ⚠️ {fieldErrors.password}
+                </p>
+              )}
             </div>
 
             <button

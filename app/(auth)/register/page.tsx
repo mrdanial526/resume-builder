@@ -7,27 +7,52 @@ export default function RegisterPage() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  
+  // Track errors individually per field
+  const [fieldErrors, setFieldErrors] = useState<{ [key: string]: string }>({});
+  const [generalError, setGeneralError] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
+    setFieldErrors({});
+    setGeneralError("");
 
-    if (!name.trim() || !email.trim() || !password.trim()) {
-      setError("All fields are required.");
+    // Validate individual fields and map out specific reasons
+    const errors: { [key: string]: string } = {};
+    if (!name.trim()) {
+      errors.name = "Full name is required to personalize your resumes.";
+    }
+    if (!email.trim()) {
+      errors.email = "Email address is required for your account login.";
+    }
+    if (!password.trim()) {
+      errors.password = "Password is required to secure your account.";
+    } else if (password.length < 6) {
+      errors.password = "Password must be at least 6 characters long.";
+    }
+
+    // If there are validation errors, block submission and display them
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
+      setGeneralError("Please fill out all required fields properly before registering.");
       return;
     }
 
     setLoading(true);
 
-    const res = await registerUser({ name, email, password });
+    try {
+      const res = await registerUser({ name, email, password });
 
-    if (res?.error) {
-      setError(res.error);
+      if (res?.error) {
+        setGeneralError(res.error);
+        setLoading(false);
+      } else {
+        window.location.href = "/login";
+      }
+    } catch (err) {
+      setGeneralError("An unexpected network error occurred. Please try again.");
       setLoading(false);
-    } else {
-      window.location.href = "/login";
     }
   };
 
@@ -66,56 +91,93 @@ export default function RegisterPage() {
             </p>
           </div>
 
-          {error && (
-            <div className="bg-rose-50 border border-rose-200 text-rose-600 p-3.5 rounded-xl text-sm font-medium text-center">
-              {error}
+          {generalError && (
+            <div className="bg-rose-50 border border-rose-200 text-rose-700 p-3.5 rounded-xl text-xs font-semibold flex items-center gap-2">
+              <span>⚠️</span>
+              <p>{generalError}</p>
             </div>
           )}
 
           <form className="space-y-5" onSubmit={handleSubmit}>
+            {/* Full Name Field */}
             <div className="space-y-1.5">
               <label className="block text-xs font-semibold uppercase tracking-wider text-slate-600">
-                Full Name
+                Full Name *
               </label>
               <input
                 type="text"
-                required
                 autoComplete="name"
                 placeholder="Muhammad Danial"
-                className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:bg-white transition duration-200"
+                className={`w-full px-4 py-3 bg-slate-50 border rounded-xl text-slate-900 text-sm focus:outline-none focus:bg-white transition duration-200 ${
+                  fieldErrors.name
+                    ? "border-rose-500 ring-2 ring-rose-100"
+                    : "border-slate-200 focus:ring-2 focus:ring-indigo-600"
+                }`}
                 value={name}
-                onChange={(e) => setName(e.target.value)}
+                onChange={(e) => {
+                  setName(e.target.value);
+                  if (fieldErrors.name) setFieldErrors({ ...fieldErrors, name: "" });
+                }}
               />
+              {fieldErrors.name && (
+                <p className="text-xs font-semibold text-rose-600 mt-1">
+                  ⚠️ {fieldErrors.name}
+                </p>
+              )}
             </div>
 
+            {/* Email Address Field */}
             <div className="space-y-1.5">
               <label className="block text-xs font-semibold uppercase tracking-wider text-slate-600">
-                Email Address
+                Email Address *
               </label>
               <input
                 type="email"
-                required
                 autoComplete="email"
                 placeholder="name@example.com"
-                className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:bg-white transition duration-200"
+                className={`w-full px-4 py-3 bg-slate-50 border rounded-xl text-slate-900 text-sm focus:outline-none focus:bg-white transition duration-200 ${
+                  fieldErrors.email
+                    ? "border-rose-500 ring-2 ring-rose-100"
+                    : "border-slate-200 focus:ring-2 focus:ring-indigo-600"
+                }`}
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  if (fieldErrors.email) setFieldErrors({ ...fieldErrors, email: "" });
+                }}
               />
+              {fieldErrors.email && (
+                <p className="text-xs font-semibold text-rose-600 mt-1">
+                  ⚠️ {fieldErrors.email}
+                </p>
+              )}
             </div>
 
+            {/* Password Field */}
             <div className="space-y-1.5">
               <label className="block text-xs font-semibold uppercase tracking-wider text-slate-600">
-                Password
+                Password *
               </label>
               <input
                 type="password"
-                required
                 autoComplete="new-password"
                 placeholder="••••••••"
-                className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:bg-white transition duration-200"
+                className={`w-full px-4 py-3 bg-slate-50 border rounded-xl text-slate-900 text-sm focus:outline-none focus:bg-white transition duration-200 ${
+                  fieldErrors.password
+                    ? "border-rose-500 ring-2 ring-rose-100"
+                    : "border-slate-200 focus:ring-2 focus:ring-indigo-600"
+                }`}
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  if (fieldErrors.password) setFieldErrors({ ...fieldErrors, password: "" });
+                }}
               />
+              {fieldErrors.password && (
+                <p className="text-xs font-semibold text-rose-600 mt-1">
+                  ⚠️ {fieldErrors.password}
+                </p>
+              )}
             </div>
 
             <button
