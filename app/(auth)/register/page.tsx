@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { registerUser } from "@/actions/auth-actions";
-import Link from "next/link";
 
 export default function RegisterPage() {
   const [name, setName] = useState("");
@@ -124,13 +123,12 @@ export default function RegisterPage() {
 
           <p className="text-center text-sm text-slate-500 pt-2">
             Already have an account?{" "}
-            <Link
+            <a
               href="/login"
-              prefetch={false}
               className="text-indigo-600 hover:text-indigo-700 font-semibold hover:underline"
             >
               Sign in
-            </Link>
+            </a>
           </p>
         </div>
       </div>

@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { signIn } from "next-auth/react";
-import Link from "next/link";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -112,13 +111,12 @@ export default function LoginPage() {
 
           <p className="text-center text-sm text-slate-500 pt-2">
             Don&apos;t have an account?{" "}
-            <Link
+            <a
               href="/register"
-              prefetch={false}
               className="text-indigo-600 hover:text-indigo-700 font-semibold hover:underline"
             >
               Create an account
-            </Link>
+            </a>
           </p>
         </div>
       </div>
