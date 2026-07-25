@@ -1,12 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { registerUser } from "@/actions/auth-actions";
 import Link from "next/link";
 
 export default function RegisterPage() {
-  const router = useRouter();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -24,7 +22,8 @@ export default function RegisterPage() {
       setError(res.error);
       setLoading(false);
     } else {
-      router.push("/login");
+      // Force hard redirect to clear router cache on Vercel
+      window.location.href = "/login";
     }
   };
 
@@ -86,7 +85,7 @@ export default function RegisterPage() {
 
         <p className="text-center text-sm text-gray-600 mt-4">
           Already have an account?{" "}
-          <Link href="/login" className="text-indigo-600 hover:underline font-medium">
+          <Link href="/login" prefetch={false} className="text-indigo-600 hover:underline font-medium">
             Sign in
           </Link>
         </p>

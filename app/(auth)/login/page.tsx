@@ -2,11 +2,9 @@
 
 import { useState } from "react";
 import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 
 export default function LoginPage() {
-  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -27,8 +25,8 @@ export default function LoginPage() {
       setError("Invalid email or password");
       setLoading(false);
     } else {
-      router.push("/dashboard");
-      router.refresh();
+      // Use hard redirect to clear router cache on Vercel
+      window.location.href = "/dashboard";
     }
   };
 
@@ -80,7 +78,7 @@ export default function LoginPage() {
 
         <p className="text-center text-sm text-gray-600 mt-4">
           Don&apos;t have an account?{" "}
-          <Link href="/register" className="text-indigo-600 hover:underline font-medium">
+          <Link href="/register" prefetch={false} className="text-indigo-600 hover:underline font-medium">
             Register here
           </Link>
         </p>
